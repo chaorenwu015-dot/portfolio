@@ -18,7 +18,7 @@
 body{padding-top:24px}html{scroll-padding-top:90px}
 .cover{position:relative;isolation:isolate;margin:0 24px;min-height:700px;height:calc(100svh - 48px);background:#49413d;color:#f5f2ec;display:flex;flex-direction:column;overflow:hidden}
 .cover-photo{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center bottom;filter:saturate(.35)}
-.cover-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(180deg,rgba(67,60,56,.99) 0%,rgba(67,60,56,.98) 34%,rgba(67,60,56,.89) 58%,rgba(45,38,34,.62) 100%)}
+.cover-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(180deg,rgba(67,60,56,.99) 0%,rgba(67,60,56,.98) 34%,rgba(67,60,56,.84) 55%,rgba(67,60,56,.82) 68%,rgba(67,60,56,.94) 86%,#433c38 100%)}
 .cover-nav{position:relative;top:auto;z-index:1;background:transparent;backdrop-filter:none;border:0;border-bottom:1px solid #e9e1d280;margin:0 4%;padding:30px 8px 22px;display:flex;justify-content:space-between;gap:20px;align-items:center;color:inherit}
 .cover-brand{font:700 13px Georgia,"Times New Roman",serif;letter-spacing:-.4px;white-space:nowrap}
 .cover-nav div{display:flex;gap:40px;font-size:12px}.cover-nav a{display:inline-flex;align-items:center;min-height:44px}.cover-nav a:hover{opacity:.7}
@@ -27,16 +27,16 @@ body{padding-top:24px}html{scroll-padding-top:90px}
 .cover h1{font-family:"SimSun","Songti SC",serif;font-size:clamp(70px,8.5vw,132px);font-weight:700;line-height:1.12;letter-spacing:-.055em;margin:0 0 28px}
 .cover-title,.cover-statement{font-family:"SimSun","Songti SC",serif;font-size:18px;font-weight:700;line-height:1.65;margin:0}
 .cover-statement{margin-top:5px}.cover-disciplines{display:flex;flex-wrap:wrap;gap:8px 17px;padding:0;margin:34px 0 0;list-style:none;color:inherit;font-family:"SimSun","Songti SC",serif;font-size:clamp(19px,2vw,26px);font-weight:700;line-height:1.5}
-.cover-meta{position:relative;margin:0 4% 28px;padding-top:15px;border-top:1px solid #e9e1d280;display:flex;justify-content:space-between;gap:20px;font-family:"Courier New",monospace;font-size:10px;font-weight:600;line-height:1.5;letter-spacing:-.3px}
+
 .cover a:focus-visible{outline-color:#fff2d5}.work-jumps{top:0}
 @media(min-width:1600px){.cover-copy{margin-left:6%}.cover-photo{object-position:center 86%}}
-@media(max-width:700px){body{padding-top:12px}.cover{margin:0 12px;height:calc(100svh - 24px);min-height:650px}.cover-nav{margin:0 6%;padding:15px 0 10px;gap:8px;align-items:flex-start;flex-wrap:wrap}.cover-brand{font-size:12px}.cover-nav div{gap:18px;font-size:11px}.cover-copy{margin:0 7%;padding:45px 0 55px}.cover-edition{font-size:14px;margin-bottom:23px}.cover h1{font-size:clamp(64px,18vw,100px);margin-bottom:26px}.cover-title,.cover-statement{font-size:16px}.cover-disciplines{font-size:19px;gap:6px 14px;max-width:310px;margin-top:28px}.cover-meta{margin:0 6% 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px 8px;font-size:8px}.cover-meta span:nth-child(even){text-align:right}.cover-meta span:nth-child(2){order:3}.cover-meta span:nth-child(3){order:2}.cover-meta span:nth-child(4){order:4}.cover-photo{object-position:45% bottom}.cover-shade{background:linear-gradient(180deg,rgba(67,60,56,.99) 0%,rgba(67,60,56,.97) 38%,rgba(67,60,56,.8) 68%,rgba(45,38,34,.61) 100%)}.work-jumps{top:0}}
+@media(max-width:700px){body{padding-top:12px}.cover{margin:0 12px;height:calc(100svh - 24px);min-height:650px}.cover-nav{margin:0 6%;padding:15px 0 10px;gap:8px;align-items:flex-start;flex-wrap:wrap}.cover-brand{font-size:12px}.cover-nav div{gap:18px;font-size:11px}.cover-copy{margin:0 7%;padding:45px 0 55px}.cover-edition{font-size:14px;margin-bottom:23px}.cover h1{font-size:clamp(64px,18vw,100px);margin-bottom:26px}.cover-title,.cover-statement{font-size:16px}.cover-disciplines{font-size:19px;gap:6px 14px;max-width:310px;margin-top:28px}.cover-photo{object-position:45% bottom}.cover-shade{background:linear-gradient(180deg,rgba(67,60,56,.99) 0%,rgba(67,60,56,.97) 38%,rgba(67,60,56,.8) 60%,rgba(67,60,56,.9) 78%,#433c38 100%)}.work-jumps{top:0}}
 @media(max-height:650px) and (min-width:701px){.cover{min-height:570px}.cover-copy{padding:25px 0}.cover h1{font-size:80px}.cover-edition{margin-bottom:15px}.cover-disciplines{margin-top:20px}.cover-nav{padding-top:15px;padding-bottom:10px}}
 
 /* Personal profile — continuation of the architectural cover. */
 .profile{margin:0 24px;background:#433c38;color:#f5f2ec;scroll-margin-top:0}
 .profile-inner{max-width:1400px;margin:0 auto;padding:0 4.4%}
-.profile-header{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e9e1d24d;padding:24px 0;font:11px/1.6 "Courier New",monospace;letter-spacing:1px}
+.profile-header{display:flex;align-items:center;justify-content:space-between;border-top:0;padding:24px 0;font:11px/1.6 "Courier New",monospace;letter-spacing:1px}
 .profile-header a{font-family:"Microsoft YaHei",sans-serif;letter-spacing:0;display:flex;gap:24px;align-items:center;min-height:44px}
 .profile-intro{display:grid;grid-template-columns:1fr 1fr;gap:8%;align-items:center;padding:65px 0 90px}
 .profile-kicker{color:#c7bbb0;font-size:12px;letter-spacing:3px;margin:0 0 24px}
@@ -59,7 +59,6 @@ body{padding-top:24px}html{scroll-padding-top:90px}
 <div class="cover-shade" aria-hidden="true"></div>
 <nav class="cover-nav" aria-label="主导航"><a class="cover-brand" href="#top">WU YONGQI</a><div><a href="#about">个人简历</a><a href="#work">作品合集</a><a href="#contact">联系方式</a></div></nav>
 <div class="cover-copy"><p class="cover-edition">[ PORTFOLIO&nbsp; 2026]</p><h1>伍永琪</h1><p class="cover-title">「AIGC &amp; 美術设计」</p><p class="cover-statement">將美學與演算法結合</p><ul class="cover-disciplines" aria-label="创作领域"><li>AIGC设计</li><li>平面设计</li><li>文案编辑</li><li>空间设计</li><li>摄影</li></ul></div>
-<div class="cover-meta"><span>2024 — 2026</span><span>DIGITAL PRODUCT DESIGN</span><span>AI MODEL TRAINING</span><span>BASED IN GUANGZHOU/FOSHAN</span></div>
 </header><section class="profile" id="about" aria-labelledby="profile-name"><div class="profile-inner">
 <header class="profile-header"><span>01 / PERSONAL PROFILE</span><a href="#work">浏览作品合集 <span aria-hidden="true">↗</span></a></header>
 <div class="profile-intro"><div><p class="profile-kicker">设计 × 传播 × AI</p><h2 id="profile-name">伍永琪<span class="profile-name-en">WU YONGQI</span></h2><p class="profile-role">美术指导 / AIGC 创作</p></div><p class="profile-bio">拥有设计与传播跨领域背景，融合视觉美学、文案逻辑与叙事思维，专注 AI 视觉创作、风格体系搭建与内容策划。具备从创意策划、模型训练到视觉资产制作的完整实践经验。</p></div>
