@@ -15,7 +15,7 @@
 @media(max-width:700px){.work-jumps{top:60px;margin-bottom:20px;gap:6px}.work-jumps a{padding:9px 13px}.chapter-title h3{font-size:26px}.chapter-title>span{display:none}.waterfall{gap:24px}.work-chapter{margin-bottom:50px}.work-page{margin-left:-5.56%;margin-right:-5.56%}.work-page figcaption{padding:9px 5% 0}.work-page img{width:100%}}
 
 /* Cover: user-supplied portfolio artwork, rebuilt as responsive live text. */
-body{padding-top:24px}html{scroll-padding-top:90px}
+body{padding-top:24px;overflow-x:clip}html{scroll-padding-top:90px}
 .cover{position:relative;isolation:isolate;margin:0 24px;min-height:700px;height:calc(100svh - 48px);background:#303030;color:#f5f2ec;display:flex;flex-direction:column;overflow:hidden}
 .cover-photo{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center bottom;filter:grayscale(1)}
 .cover-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(180deg,rgba(48,48,48,.99) 0%,rgba(48,48,48,.98) 34%,rgba(48,48,48,.84) 55%,rgba(48,48,48,.82) 68%,rgba(48,48,48,.94) 86%,#303030 100%)}
@@ -179,6 +179,19 @@ a:focus-visible,button:focus-visible{outline-color:#fff}::selection{background:#
 @media(min-width:701px) and (max-width:1050px){.masonry-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.masonry-gallery{grid-template-columns:1fr;gap:10px 0;padding:0 12px}.category-gallery .gallery-window{overflow:visible}.masonry-card figcaption{font-size:11px;padding:8px 2px 12px}.gallery-header-actions{min-width:95px}}
 @media(prefers-reduced-motion:reduce){.masonry-link img{transition:none}}
+
+/* Viewport-fluid media: actual layout width, preserved ratios, no fixed preview dimensions. */
+.category-gallery .gallery-window{width:var(--page-width,100%);margin-left:calc((100% - var(--page-width,100%)) / 2)}
+.masonry-gallery{width:100%;box-sizing:border-box}
+.masonry-card,.masonry-content,.masonry-link{max-width:100%;min-width:0}
+.masonry-card img,.masonry-card video,.work-page img,.photo-figure img,.urban-figure img,.full-video-pair video{width:100%;height:auto;max-width:100%;object-fit:contain}
+.work-chapter{width:100%;max-width:100%}.photo-grid,.urban-grid,.waterfall{min-width:0;max-width:100%}
+@media(min-width:701px){.category-gallery .gallery-header-actions{min-width:0}}
+
+main{width:100%;max-width:none}
+.gooey-stage{clip-path:inset(-75px 0 -75px 0)}
+
+html,body{overflow-x:clip}
 </style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
 <img class="cover-photo" src="assets/cover/architecture.webp" alt="" width="1259" height="1678" fetchpriority="high">
 <div class="cover-shade" aria-hidden="true"></div>
@@ -229,19 +242,19 @@ const galleryData=[{"slug": "video", "title": "AI视频", "en": "AI VIDEO", "ite
 const categoryGallery=document.querySelector('.category-gallery'),grid=categoryGallery.querySelector('.masonry-gallery'),buttons=[...categoryGallery.querySelectorAll('.category-switch button')],motion=matchMedia('(prefers-reduced-motion: reduce)');
 let categoryIndex=0;const detailSections=[...document.querySelectorAll('.work-chapter')];
 function refresh(){window.ScrollTrigger?.refresh()}
-let masonryFrame=0,previousWidth=0;
+let masonryFrame=0,previousWidth=0;const cardObservers=[];
 function scheduleMasonry(){cancelAnimationFrame(masonryFrame);masonryFrame=requestAnimationFrame(()=>{
  const style=getComputedStyle(grid),row=parseFloat(style.gridAutoRows),gap=parseFloat(style.rowGap);if(!row)return;
  const sizes=[...grid.children].map(card=>Math.ceil((card.firstElementChild.getBoundingClientRect().height+gap)/(row+gap)));
  [...grid.children].forEach((card,i)=>card.style.gridRowEnd='span '+sizes[i]);refresh();
 })}
-function selectCategory(index){categoryIndex=index;document.querySelectorAll('video').forEach(v=>v.pause());detailSections.forEach(el=>el.hidden=true);grid.replaceChildren();const data=galleryData[index];
+function selectCategory(index){cardObservers.splice(0).forEach(observer=>observer.disconnect());categoryIndex=index;document.querySelectorAll('video').forEach(v=>v.pause());detailSections.forEach(el=>el.hidden=true);grid.replaceChildren();const data=galleryData[index];
  document.querySelector('#gallery-eyebrow').textContent=String(index+1).padStart(2,'0')+' — '+data.en;document.querySelector('#gallery-category-title').textContent=data.title;const subtitle=document.querySelector('#gallery-category-subtitle');subtitle.textContent=data.subtitle||'';subtitle.hidden=!data.subtitle;document.querySelector('#gallery-total').textContent=data.items.length+(data.slug==='video'?' VIDEOS':' IMAGES');categoryGallery.querySelector('.gallery-full').href='#chapter-'+data.slug;
  buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(index===i)));const chosen=buttons[index],dock=chosen.parentElement;dock.scrollLeft=Math.max(0,chosen.offsetLeft-(dock.clientWidth-chosen.offsetWidth)/2);gooeyCategory.update(index);
  data.items.forEach(item=>{const card=document.createElement('figure');card.className='masonry-card';const content=document.createElement('div');content.className='masonry-content';
  if(item.video){const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.poster=item.image;video.src=item.video;video.width=item.width;video.height=item.height;video.setAttribute('aria-label',item.label);video.addEventListener('play',()=>document.querySelectorAll('video').forEach(other=>{if(other!==video)other.pause()}));content.append(video)}
  else{const link=document.createElement('a');link.href='#chapter-'+data.slug;link.className='masonry-link';link.setAttribute('aria-label',item.label+'，浏览完整作品');const im=document.createElement('img');im.src=item.image;im.alt=item.label;im.width=item.width;im.height=item.height;im.loading='lazy';im.decoding='async';im.addEventListener('load',scheduleMasonry,{once:true});link.append(im);link.addEventListener('click',e=>{e.preventDefault();openDetail(data.slug)});content.append(link)}
- const label=document.createElement('figcaption');label.textContent=item.label;content.append(label);card.append(content);grid.append(card)});
+ const label=document.createElement('figcaption');label.textContent=item.label;content.append(label);card.append(content);grid.append(card);const observer=new ResizeObserver(scheduleMasonry);observer.observe(content);cardObservers.push(observer)});
  scheduleMasonry();
  if(location.hash.startsWith('#chapter-'))history.replaceState(null,'','#work');
 }
@@ -249,5 +262,8 @@ function openDetail(slug,scroll=true){const detail=document.querySelector('#chap
 buttons.forEach((b,i)=>b.onclick=()=>{const top=categoryGallery.getBoundingClientRect().top;selectCategory(i);if(top<0)categoryGallery.scrollIntoView({behavior:'instant',block:'start'})});categoryGallery.querySelector('.gallery-full').addEventListener('click',e=>{e.preventDefault();openDetail(galleryData[categoryIndex].slug)});
 document.querySelectorAll('video').forEach(v=>v.addEventListener('play',()=>document.querySelectorAll('video').forEach(other=>{if(other!==v)other.pause()})));
 new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(Math.abs(width-previousWidth)>.5){previousWidth=width;scheduleMasonry()}}).observe(grid);
+function syncFluidViewport(){document.documentElement.style.setProperty('--page-width',document.documentElement.clientWidth+'px');scheduleMasonry()}
+addEventListener('resize',syncFluidViewport,{passive:true});addEventListener('orientationchange',syncFluidViewport,{passive:true});window.visualViewport?.addEventListener('resize',syncFluidViewport,{passive:true});document.fonts.ready.then(syncFluidViewport);syncFluidViewport();
+
 const initialSlug=location.hash.startsWith('#chapter-')?location.hash.slice(9):null;selectCategory(Math.max(0,galleryData.findIndex(d=>d.slug===initialSlug)));if(initialSlug)requestAnimationFrame(()=>openDetail(initialSlug));
 </script><script src="assets/vendor/fade-content.js"></script></body></html>
