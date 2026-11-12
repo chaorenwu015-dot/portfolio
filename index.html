@@ -274,7 +274,10 @@ main{width:calc(100% - 48px);max-width:1400px;margin-inline:auto;padding-inline:
 .drama-single-cover>img{aspect-ratio:4/3;object-fit:cover;object-position:center}.drama-single-cover:last-child>img{object-position:center 28%}
 .photo-editorial-layout{display:flex;flex-direction:column;gap:35px}.photo-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:stretch}.photo-cell{min-width:0;display:flex;flex-direction:column;justify-content:space-between}.photo-row .photo-figure figcaption{font-size:11px;line-height:1.6;padding:11px 0 0}.photo-note{margin:24px 0 28.6px;max-width:42em}.photo-note h5{font:400 19px/1.5 "SimSun",serif;margin:0 0 13px}.photo-note p{font-size:14px;line-height:2;margin:0}.photo-text-only{justify-content:flex-end}.photo-row .photo-figure img{display:block;width:100%;height:auto;object-fit:contain}
 @media(max-width:700px){.photo-row{grid-template-columns:1fr;gap:26px}.photo-editorial-layout{gap:28px}.photo-note{margin:20px 0 0;max-width:none}.photo-note p{font-size:13px}.photo-note h5{font-size:18px}.photo-text-only .photo-note{margin-top:0}}
-.photo-cell:not(:has(.photo-note)){justify-content:flex-end}</style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
+.photo-cell:not(:has(.photo-note)){justify-content:flex-end}
+/* Image-only photography rows share a top edge; text rows retain their bottom alignment. */
+.photo-row:not(:has(.photo-note)) .photo-cell{justify-content:flex-start}
+</style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
 <img class="cover-photo" src="assets/cover/architecture.webp" alt="" width="1259" height="1678" fetchpriority="high">
 <div class="cover-shade" aria-hidden="true"></div>
 <nav class="cover-nav" aria-label="主导航"><a class="cover-brand" href="#top">WU YONGQI</a><div><a href="#about">个人简历</a><a href="#work">作品合集</a><a href="#contact">联系方式</a></div></nav>
