@@ -321,6 +321,10 @@ main{width:calc(100% - 48px);max-width:1400px;margin-inline:auto;padding-inline:
 #chapter-design a:focus-visible{outline-color:#52664b}
 #chapter-design ::selection{background:#dce8d2;color:#20261d}
 @media(max-width:700px){#chapter-design{padding:20px 16px 28px}}
+
+/* Blend the dark overview into the white complete-project canvas. */
+#chapter-design{--design-fade-height:clamp(170px,18vw,250px);background:linear-gradient(to bottom,#303030 0%,#454545 15%,#777 38%,#b7b7b7 65%,#e9e9e9 86%,#fff 100%) top/100% var(--design-fade-height) no-repeat,#fff;padding-top:calc(var(--design-fade-height) + 28px)}
+@media(max-width:700px){#chapter-design{--design-fade-height:160px;padding-top:calc(var(--design-fade-height) + 20px)}}
 </style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
 <img class="cover-photo" src="assets/cover/architecture.webp" alt="" width="1259" height="1678" fetchpriority="high">
 <div class="cover-shade" aria-hidden="true"></div>
