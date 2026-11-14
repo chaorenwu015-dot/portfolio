@@ -369,33 +369,6 @@ main{width:calc(100% - 48px);max-width:1400px;margin-inline:auto;padding-inline:
 
 .video-cover-title .video-cover-episode{font:400 clamp(15px,1.5vw,21px)/1.5 "SimSun",serif;margin:8px 0 0}.video-cover-title:has(.video-cover-episode) h4{font-size:clamp(23px,2.4vw,34px)}@media(max-width:700px){.video-cover-title .video-cover-episode{font-size:15px}.video-cover-title:has(.video-cover-episode) h4{font-size:23px}}
 </style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
- /* 隐藏下方独立的建筑立面图，包括它下面的说明 */
-#design-with-you .cat-board-opening > .cat-elevation {
-  display: none;
-}
-
-/* 大图所在区域保持白色背景 */
-#design-with-you .cat-board-opening > .project-wide {
-  background: #fff;
-}
-
-/* 只让大图顶部的天空逐渐融入上方白底 */
-#design-with-you .cat-board-opening > .project-wide img {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.16) 3%,
-    rgba(0, 0, 0, 0.6) 9%,
-    #000 18%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.16) 3%,
-    rgba(0, 0, 0, 0.6) 9%,
-    #000 18%
-  );
-}
 <img class="cover-photo" src="assets/cover/architecture.webp" alt="" width="1259" height="1678" fetchpriority="high">
 <div class="cover-shade" aria-hidden="true"></div>
 <nav class="cover-nav" aria-label="主导航"><a class="cover-brand" href="#top">WU YONGQI</a><div><a href="#about">个人简历</a><a href="#work">作品合集</a><a href="#contact">联系方式</a></div></nav>
