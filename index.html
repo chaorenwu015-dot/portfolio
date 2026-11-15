@@ -392,6 +392,17 @@ main{width:calc(100% - 48px);max-width:1400px;margin-inline:auto;padding-inline:
   #space-plain-light .space-case-images,
 #space-shakespeare .space-case-images { grid-template-columns: 1fr; gap: 24px; }
 }
+
+/* Return to the current category after finishing a complete work. */
+.work-return { display: flex; justify-content: flex-end; margin-top: 28px; }
+.work-return-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 10px 0;
+  color: inherit; font-size: 13px; line-height: 1.5;
+  border-bottom: 1px solid currentColor;
+}
+.work-return-link:hover { opacity: .75; }
+.work-return-link:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
 </style></head><body><header class="cover" id="top" aria-label="伍永琪个人作品集封面">
 <img class="cover-photo" src="assets/cover/architecture.webp" alt="" width="1259" height="1678" fetchpriority="high">
 <div class="cover-shade" aria-hidden="true"></div>
@@ -488,6 +499,41 @@ function openDramaGroup(index){dramaGroup=index;openDetail('drama');const data=g
 function openWritingArticle(id){openDetail('writing',false);document.getElementById(id)?.scrollIntoView({behavior:'instant',block:'start'});history.replaceState(null,'','#'+id)}
 function openVideoFilm(src){const groups=galleryData.find(d=>d.slug==='video').groups;const index=groups.findIndex(g=>g.items.some(item=>item.video===src));if(index<0)return;videoGroup=index;selectCategory(0);openDetail('video',false);const target=document.getElementById('film-'+src.split('/').pop().replace(/\.mp4$/,''));if(target){target.scrollIntoView({behavior:'instant',block:'start'});history.replaceState(null,'','#'+target.id)}refresh()}
 function openDetail(slug,scroll=true){if(slug==='design')document.querySelectorAll('#chapter-design .design-case').forEach(el=>el.hidden=false);if(['graphic','illustration','photo','urban'].includes(slug)){selectCategory(galleryData.findIndex(d=>d.slug===slug));return;}if(slug==='space')document.querySelectorAll('#chapter-space .space-case').forEach(el=>el.hidden=false);document.querySelectorAll('.video-detail-group').forEach((el,i)=>el.hidden=slug==='video'&&i!==videoGroup);document.querySelectorAll('.drama-detail-group').forEach((el,i)=>el.hidden=slug==='drama'&&i!==dramaGroup);const detail=document.querySelector('#chapter-'+slug);if(!detail)return;detail.querySelectorAll('img').forEach(img=>{img.loading='eager'});detailSections.forEach(el=>el.hidden=el!==detail);if(!detail.querySelector('.back-to-gallery')){const back=document.createElement('a');back.href='#work';back.className='back-to-gallery';back.textContent='← 返回分类作品';back.addEventListener('click',e=>{e.preventDefault();detail.hidden=true;history.replaceState(null,'','#work');refresh();categoryGallery.scrollIntoView({behavior:'instant',block:'start'})});detail.prepend(back)}refresh();if(scroll){detail.scrollIntoView({behavior:'instant',block:'start'});history.replaceState(null,'',slug==='video'?'#video-'+galleryData.find(d=>d.slug==='video').groups[videoGroup].slug:'#chapter-'+slug)}}
+
+function returnToWorkGallery(slug) {
+  const index = galleryData.findIndex(category => category.slug === slug);
+  if (index < 0) return;
+  selectCategory(index);
+  history.replaceState(null, '', '#work');
+  refresh();
+  categoryGallery.scrollIntoView({ behavior: 'instant', block: 'start' });
+  buttons[index]?.focus({ preventScroll: true });
+}
+function addWorkReturnLinks() {
+  const works = document.querySelectorAll(
+    '.space-case, .design-case, .writing-article, .video-detail-group, .drama-detail-group'
+  );
+  works.forEach(work => {
+    if (work.querySelector('.work-return')) return;
+    const chapter = work.closest('.work-chapter');
+    const slug = chapter?.id.replace(/^chapter-/, '');
+    if (!galleryData.some(category => category.slug === slug)) return;
+    const footer = document.createElement('div');
+    footer.className = 'work-return';
+    const back = document.createElement('a');
+    back.className = 'work-return-link';
+    back.href = '#work';
+    back.textContent = '← 返回作品列表';
+    back.addEventListener('click', event => {
+      event.preventDefault();
+      returnToWorkGallery(slug);
+    });
+    footer.append(back);
+    work.append(footer);
+  });
+}
+addWorkReturnLinks();
+
 buttons.forEach((b,i)=>b.onclick=()=>{const top=categoryGallery.getBoundingClientRect().top;selectCategory(i);if(top<0)categoryGallery.scrollIntoView({behavior:'instant',block:'start'})});categoryGallery.querySelector('.gallery-full').addEventListener('click',e=>{e.preventDefault();openDetail(galleryData[categoryIndex].slug)});
 document.querySelectorAll('video').forEach(v=>v.addEventListener('play',()=>document.querySelectorAll('video').forEach(other=>{if(other!==v)other.pause()})));
 new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(Math.abs(width-previousWidth)>.5){previousWidth=width;scheduleMasonry()}}).observe(grid);
