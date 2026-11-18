@@ -323,8 +323,8 @@ main{width:calc(100% - 48px);max-width:1400px;margin-inline:auto;padding-inline:
 @media(max-width:700px){#chapter-design{padding:20px 16px 28px}}
 
 /* Blend the dark overview into the white complete-project canvas. */
-#chapter-design{--design-fade-height:clamp(170px,18vw,250px);background:linear-gradient(to bottom,#303030 0%,#454545 15%,#777 38%,#b7b7b7 65%,#e9e9e9 86%,#fff 100%) top/100% var(--design-fade-height) no-repeat,#fff;padding-top:calc(var(--design-fade-height) + 28px)}
-@media(max-width:700px){#chapter-design{--design-fade-height:160px;padding-top:calc(var(--design-fade-height) + 20px)}}
+#chapter-design{--design-fade-height:clamp(170px,18vw,250px);background:linear-gradient(to bottom,#303030 0%,#454545 15%,#777 38%,#b7b7b7 65%,#e9e9e9 86%,#fff 100%) top/100% var(--design-fade-height) no-repeat,linear-gradient(to bottom,#fff 0%,#e9e9e9 14%,#b7b7b7 35%,#777 62%,#454545 85%,#303030 100%) bottom/100% var(--design-fade-height) no-repeat,#fff;padding-top:calc(var(--design-fade-height) + 28px);padding-bottom:calc(var(--design-fade-height) + 40px)}
+@media(max-width:700px){#chapter-design{--design-fade-height:160px;padding-top:calc(var(--design-fade-height) + 20px);padding-bottom:calc(var(--design-fade-height) + 28px)}}
 
 .masonry-gallery.photo-overview{display:block}.photo-overview .photo-series:last-child{margin-bottom:0}
 
