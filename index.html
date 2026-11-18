@@ -593,6 +593,18 @@ html.layer-paging { scroll-padding-block-start: calc(var(--portfolio-header-heig
 }
 .portfolio-outline-links a[aria-current="location"] { color: #fff; box-shadow: inset 0 -2px 0 #fff; }
 .layer-current { max-width: min(26vw, 160px); overflow: hidden; text-overflow: ellipsis; }
+
+/* Center each visible secondary menu beneath its active primary title. */
+.portfolio-secondary-inner {
+  width: max-content; max-width: calc(100% - 32px);
+  margin-inline: 0; padding: 4px 12px; gap: 16px;
+}
+.portfolio-secondary-label { white-space: nowrap; }
+.portfolio-secondary-inner .category-switch,
+.portfolio-secondary-inner .portfolio-outline-links { flex: 0 1 auto; min-width: 0; }
+@media (max-width: 700px) {
+  .portfolio-secondary-inner { padding-inline: 8px; gap: 10px; }
+}
 </style></head><body><header class="portfolio-header" id="portfolio-header"><div class="portfolio-header-inner">
 <a class="portfolio-brand" href="#top" aria-label="伍永琪，返回首页">WU YONGQI</a>
 <nav class="portfolio-primary-nav" aria-label="主要内容"><a href="#expertise">专业技能</a><a href="#experience">学习与工作历程</a><a href="#work">作品·视觉探索</a></nav>
@@ -917,6 +929,31 @@ portfolioSearchForm.addEventListener('keydown', event => {
 document.addEventListener('pointerdown', event => {
   if (!portfolioSearchForm.contains(event.target)) portfolioSearchPanel.hidden = true;
 });
+
+function centeredSubmenuOffset(center, width, available, gutter = 16) {
+  return Math.max(gutter, Math.min(center - width / 2, Math.max(gutter, available - width - gutter)));
+}
+function alignPortfolioSubmenus() {
+  const active = portfolioPrimaryLinks.find(link => link.getAttribute('aria-current') === 'location');
+  if (!active) return;
+  const title = active.getBoundingClientRect();
+  [portfolioCategoryNav, portfolioOutlineNav].forEach(nav => {
+    if (nav.hidden) return;
+    const inner = nav.querySelector('.portfolio-secondary-inner');
+    if (!inner) return;
+    const bounds = nav.getBoundingClientRect();
+    if (bounds.width <= 0) return;
+    const center = title.left + title.width / 2 - bounds.left;
+    const symmetricWidth = Math.min(bounds.width - 32, Math.max(240, 2 * Math.min(center - 16, bounds.width - 16 - center)));
+    inner.style.maxWidth = bounds.width > 700 ? symmetricWidth.toFixed(2) + 'px' : '';
+    const width = inner.getBoundingClientRect().width;
+    if (width <= 0) return;
+    const left = centeredSubmenuOffset(center, width, bounds.width);
+    const margin = left.toFixed(2) + 'px';
+    if (inner.style.marginInlineStart !== margin) inner.style.marginInlineStart = margin;
+  });
+}
+
 function syncPortfolioHeaderHeight() {
   const height = Math.ceil(portfolioHeader.getBoundingClientRect().height);
   const subnavHeight = Math.max(...[portfolioCategoryNav, portfolioOutlineNav].map(nav => nav.hidden ? 0 : Math.ceil(nav.getBoundingClientRect().height)));
@@ -927,12 +964,14 @@ function syncPortfolioHeaderHeight() {
     document.documentElement.style.setProperty('--portfolio-subnav-height', subnavHeight + 'px');
     refresh();
   }
+  alignPortfolioSubmenus();
 }
 new ResizeObserver(syncPortfolioHeaderHeight).observe(portfolioHeader);
 new ResizeObserver(syncPortfolioHeaderHeight).observe(portfolioCategoryNav);
 new ResizeObserver(syncPortfolioHeaderHeight).observe(portfolioOutlineNav);
 document.fonts.ready.then(syncPortfolioHeaderHeight);
 syncPortfolioHeaderHeight();
+document.querySelector('.portfolio-primary-nav').addEventListener('scroll', alignPortfolioSubmenus, { passive: true });
 
 portfolioPrimaryLinks.forEach(link => link.addEventListener('click', event => {
   const index = layerPages.findIndex(page => '#' + page.element.id === link.hash);
