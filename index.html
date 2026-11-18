@@ -489,7 +489,7 @@ body { padding-top: 0; }
   display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(150px, 190px) auto;
   align-items: center; gap: 16px;
 }
-.portfolio-brand { font: 700 13px/1.4 Georgia, serif; letter-spacing: .6px; white-space: nowrap; }
+.portfolio-brand { font: 700 22px/1.4 Georgia, serif; letter-spacing: .6px; white-space: nowrap; }
 .portfolio-category-nav { position: static; display: block; min-width: 0; padding: 0; border: 0; background: none; backdrop-filter: none; z-index: auto; }
 .portfolio-header .category-switch {
   display: flex; gap: 0; padding: 0; min-width: 0; max-width: 100%;
@@ -537,7 +537,7 @@ html.layer-paging { scroll-padding-block-start: calc(var(--portfolio-header-heig
 }
 @media (max-width: 700px) {
   .portfolio-header-inner { grid-template-columns: auto minmax(80px, 1fr) auto; gap: 4px 10px; padding: 8px 18px; }
-  .portfolio-brand { font-size: 11px; }
+  .portfolio-brand { font-size: 16px; }
   .portfolio-quick-links { gap: 8px; font-size: 11px; }
   .portfolio-search input { padding-left: 9px; }
   .portfolio-search > button { flex-basis: 30px; }
@@ -780,6 +780,7 @@ function openPortfolioOutline(parentId, itemId) {
   if (!section || !section.children.some(item => item.id === itemId)) return;
   const target = document.getElementById(itemId);
   if (!target) return;
+  portfolioMenuPreview = null;
   if (detailSections.some(detail => !detail.hidden)) selectCategory(categoryIndex);
   history.replaceState(null, '', '#' + itemId);
   setPortfolioHierarchy(parentId);
@@ -789,8 +790,9 @@ function openPortfolioOutline(parentId, itemId) {
   requestLayerSync();
 }
 function setPortfolioHierarchy(sectionId) {
-  const section = portfolioOutlineSections[sectionId];
-  const showCategories = sectionId === 'work';
+  const menuSectionId = portfolioMenuPreview || sectionId;
+  const section = portfolioOutlineSections[menuSectionId];
+  const showCategories = menuSectionId === 'work';
   let resized = false;
   if (portfolioCategoryNav.hidden !== !showCategories) {
     portfolioCategoryNav.hidden = !showCategories;
@@ -800,8 +802,8 @@ function setPortfolioHierarchy(sectionId) {
     portfolioOutlineNav.hidden = !section;
     resized = true;
   }
-  if (section && portfolioOutlineSectionId !== sectionId) {
-    portfolioOutlineSectionId = sectionId;
+  if (section && portfolioOutlineSectionId !== menuSectionId) {
+    portfolioOutlineSectionId = menuSectionId;
     portfolioOutlineLabel.textContent = section.label;
     portfolioOutlineLinks.replaceChildren();
     section.children.forEach(item => {
@@ -810,7 +812,7 @@ function setPortfolioHierarchy(sectionId) {
       link.textContent = item.label;
       link.addEventListener('click', event => {
         event.preventDefault();
-        openPortfolioOutline(sectionId, item.id);
+        openPortfolioOutline(menuSectionId, item.id);
       });
       portfolioOutlineLinks.append(link);
     });
@@ -837,6 +839,7 @@ function returnToPortfolioOverview() {
 
 function openPortfolioCategory(index, options = {}) {
   if (!galleryData[index]) return;
+  portfolioMenuPreview = null;
   setPortfolioHierarchy('work');
   selectCategory(index);
   document.getElementById('portfolio-search-panel').hidden = true;
@@ -873,7 +876,7 @@ const portfolioOutlineNav = document.getElementById('portfolio-outline-nav');
 const portfolioOutlineLinks = portfolioOutlineNav.querySelector('.portfolio-outline-links');
 const portfolioOutlineLabel = portfolioOutlineNav.querySelector('.portfolio-secondary-label');
 const portfolioOutlineSections = {"expertise":{"label":"专业技能","children":[{"id":"expertise-ip","label":"IP 开发与角色塑造"},{"id":"expertise-story","label":"内容策划与叙事表达"},{"id":"expertise-aigc","label":"AIGC 视觉与短片制作"},{"id":"expertise-assets","label":"风格体系与资产管理"},{"id":"expertise-tools","label":"常用工具"},{"id":"expertise-specialties","label":"专项能力"}]},"experience":{"label":"学习与工作历程","children":[{"id":"experience-work","label":"工作经历"},{"id":"experience-education","label":"教育背景"},{"id":"recognition","label":"个人荣誉"}]}};
-let portfolioOutlineSectionId = '';
+let portfolioOutlineSectionId = '', portfolioMenuPreview = null;
 
 const portfolioSearchForm = document.querySelector('.portfolio-search');
 const portfolioSearchInput = document.getElementById('portfolio-search-input');
@@ -934,7 +937,7 @@ function centeredSubmenuOffset(center, width, available, gutter = 16) {
   return Math.max(gutter, Math.min(center - width / 2, Math.max(gutter, available - width - gutter)));
 }
 function alignPortfolioSubmenus() {
-  const active = portfolioPrimaryLinks.find(link => link.getAttribute('aria-current') === 'location');
+  const active = portfolioPrimaryLinks.find(link => portfolioMenuPreview ? link.hash === '#' + portfolioMenuPreview : link.getAttribute('aria-current') === 'location');
   if (!active) return;
   const title = active.getBoundingClientRect();
   [portfolioCategoryNav, portfolioOutlineNav].forEach(nav => {
@@ -973,13 +976,47 @@ document.fonts.ready.then(syncPortfolioHeaderHeight);
 syncPortfolioHeaderHeight();
 document.querySelector('.portfolio-primary-nav').addEventListener('scroll', alignPortfolioSubmenus, { passive: true });
 
-portfolioPrimaryLinks.forEach(link => link.addEventListener('click', event => {
+function navigatePortfolioHeader(event, link) {
   const index = layerPages.findIndex(page => '#' + page.element.id === link.hash);
   if (index < 0) return;
   event.preventDefault();
   document.getElementById('portfolio-search-panel').hidden = true;
-  goToLayer(index);
-}));
+  goToLayer(index, true);
+}
+portfolioPrimaryLinks.forEach(link => {
+  link.addEventListener('click', event => navigatePortfolioHeader(event, link));
+  const preview = () => {
+    portfolioMenuPreview = link.hash.slice(1);
+    requestLayerSync();
+  };
+  link.addEventListener('pointerenter', preview);
+  link.addEventListener('focus', preview);
+});
+document.querySelectorAll('.portfolio-brand, .portfolio-quick-links a').forEach(link => {
+  link.addEventListener('click', event => navigatePortfolioHeader(event, link));
+  link.addEventListener('pointerenter', () => {
+    portfolioMenuPreview = null;
+    requestLayerSync();
+  });
+});
+portfolioHeader.addEventListener('pointerleave', () => {
+  if (!portfolioHeader.contains(document.activeElement)) {
+    portfolioMenuPreview = null;
+    requestLayerSync();
+  }
+});
+portfolioHeader.addEventListener('focusout', event => {
+  if (!portfolioHeader.contains(event.relatedTarget) && !portfolioHeader.matches(':hover')) {
+    portfolioMenuPreview = null;
+    requestLayerSync();
+  }
+});
+portfolioHeader.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    portfolioMenuPreview = null;
+    requestLayerSync();
+  }
+});
 
 
 const initialCategoryIndex=location.hash.startsWith('#category-')?galleryData.findIndex(category=>category.slug===location.hash.slice(10)):-1;
@@ -1058,12 +1095,14 @@ function syncLayerPaging() {
 function requestLayerSync() {
   if (!layerFrame) layerFrame = requestAnimationFrame(syncLayerPaging);
 }
-function goToLayer(index) {
+function goToLayer(index, direct = false) {
   const page = layerPages[index];
   if (!page) return;
+  portfolioMenuPreview = null;
   if (detailSections.some(detail => !detail.hidden)) selectCategory(categoryIndex);
+  if (direct) setPortfolioHierarchy(page.element.id);
   history.replaceState(null, '', '#' + page.element.id);
-  page.element.scrollIntoView({ behavior: motion.matches ? 'instant' : 'smooth', block: 'start' });
+  page.element.scrollIntoView({ behavior: direct || motion.matches ? 'instant' : 'smooth', block: 'start' });
   page.element.focus({ preventScroll: true });
   requestLayerSync();
 }
