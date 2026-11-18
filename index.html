@@ -678,7 +678,7 @@ const urbanContent=[document.querySelector('#chapter-urban .urban-editorial-tool
 const photoSeries=[...document.querySelectorAll('#chapter-photo .photo-series')];
 function selectCategory(index){if(index!==categoryIndex)dramaGroup=0;cardObservers.splice(0).forEach(observer=>observer.disconnect());categoryIndex=index;document.querySelectorAll('video').forEach(v=>v.pause());detailSections.forEach(el=>el.hidden=true);document.documentElement.classList.remove('layer-detail-open');grid.replaceChildren();const baseData=galleryData[index];const currentGroup=baseData.slug==='video'?videoGroup:baseData.slug==='graphic'?graphicGroup:dramaGroup;const subgroup=['video','graphic'].includes(baseData.slug)?baseData.groups?.[currentGroup]:null;const data=subgroup?{...baseData,items:subgroup.items,subtitle:subgroup.title}:baseData;const subnav=document.querySelector('.gallery-subcategories');subnav.replaceChildren();subnav.hidden=!baseData.groups||baseData.slug==='drama';subnav.setAttribute('aria-label',baseData.title+'子分类');if(baseData.groups&&baseData.slug!=='drama')baseData.groups.forEach((group,i)=>{const b=document.createElement('button');b.type='button';b.textContent=group.title;b.setAttribute('aria-pressed',String(i===currentGroup));b.onclick=()=>{if(baseData.slug==='video')videoGroup=i;else if(baseData.slug==='graphic')graphicGroup=i;else dramaGroup=i;selectCategory(index)};subnav.append(b)});
  document.querySelector('#gallery-eyebrow').textContent=String(index+1).padStart(2,'0')+' — '+data.en;document.querySelector('#gallery-category-title').textContent=data.title;const subtitle=document.querySelector('#gallery-category-subtitle');subtitle.textContent=baseData.subtitle||'';subtitle.hidden=!baseData.subtitle;document.querySelector('#gallery-total').textContent=data.items.length+(data.slug==='video'?' VIDEOS':data.slug==='writing'?' WORKS':' IMAGES');categoryGallery.querySelector('.gallery-full').href='#chapter-'+data.slug;
- buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(index===i)));const chosen=buttons[index],dock=chosen.parentElement;dock.scrollLeft=Math.max(0,dock.scrollLeft+chosen.getBoundingClientRect().left-dock.getBoundingClientRect().left-(dock.clientWidth-chosen.offsetWidth)/2);
+ buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(index===i)));syncPortfolioWorkCategoryLinks(index);const chosen=buttons[index],dock=chosen.parentElement;dock.scrollLeft=Math.max(0,dock.scrollLeft+chosen.getBoundingClientRect().left-dock.getBoundingClientRect().left-(dock.clientWidth-chosen.offsetWidth)/2);
  grid.classList.toggle('urban-overview',data.slug==='urban');grid.classList.toggle('photo-overview',data.slug==='photo');grid.classList.toggle('design-overview',data.slug==='design');grid.classList.toggle('video-overview',data.slug==='video');grid.style.setProperty('--video-columns',2);grid.classList.toggle('graphic-overview',data.slug==='graphic');grid.classList.toggle('space-overview',data.slug==='space');grid.classList.toggle('drama-overview',data.slug==='drama');categoryGallery.querySelector('.gallery-full').hidden=['drama','graphic','illustration','photo','urban'].includes(data.slug);
  if(data.slug==='urban'){grid.append(...urbanContent);document.querySelector('#gallery-total').textContent='与城市建筑的同构性';grid.querySelectorAll('img').forEach(img=>img.loading='eager');history.replaceState(null,'','#chapter-urban');refresh();return;}
  if(data.slug==='photo'){grid.append(...photoSeries);grid.querySelectorAll('img').forEach(img=>img.loading='eager');if(location.hash!=='#chapter-photo')history.replaceState(null,'','#chapter-photo');refresh();return;}
@@ -814,6 +814,21 @@ function openPortfolioOutline(parentId, itemId) {
   target.focus({ preventScroll: true });
   requestLayerSync();
 }
+
+function syncPortfolioWorkCategoryLinks(index) {
+  const links = [...document.querySelectorAll('#portfolio-outline-nav a[data-work-category]')];
+  links.forEach(link => {
+    if (link.getAttribute('data-work-category') === String(index)) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  const active = links.find(link => link.getAttribute('data-work-category') === String(index));
+  if (!active || active.closest('nav').hidden) return;
+  const dock = active.parentElement;
+  const item = active.getBoundingClientRect(), bounds = dock.getBoundingClientRect();
+  if (item.left < bounds.left) dock.scrollLeft += item.left - bounds.left;
+  else if (item.right > bounds.right) dock.scrollLeft += item.right - bounds.right;
+}
+
 function setPortfolioHierarchy(sectionId) {
   const menuSectionId = portfolioMenuPreview || sectionId;
   const section = portfolioOutlineSections[menuSectionId];
@@ -830,16 +845,19 @@ function setPortfolioHierarchy(sectionId) {
       const link = document.createElement('a');
       link.href = '#' + item.id;
       link.textContent = item.label;
+      if (Number.isInteger(item.categoryIndex)) link.setAttribute('data-work-category', String(item.categoryIndex));
       link.addEventListener('click', event => {
         event.preventDefault();
-        openPortfolioOutline(menuSectionId, item.id);
+        if (Number.isInteger(item.categoryIndex)) openPortfolioCategory(item.categoryIndex);
+        else openPortfolioOutline(menuSectionId, item.id);
       });
       portfolioOutlineLinks.append(link);
     });
     resized = true;
   }
   if (section) portfolioOutlineLinks.querySelectorAll('a').forEach(link => {
-    if (link.hash === location.hash) link.setAttribute('aria-current', 'location');
+    const active = menuSectionId === 'work' ? link.getAttribute('data-work-category') === String(categoryIndex) : link.hash === location.hash;
+    if (active) link.setAttribute('aria-current', 'location');
     else link.removeAttribute('aria-current');
   });
   portfolioPrimaryLinks.forEach(link => {
@@ -896,6 +914,12 @@ const portfolioOutlineNav = document.getElementById('portfolio-outline-nav');
 const portfolioOutlineLinks = portfolioOutlineNav.querySelector('.portfolio-outline-links');
 const portfolioOutlineLabel = portfolioOutlineNav.querySelector('.portfolio-secondary-label');
 const portfolioOutlineSections = {"experience":{"label":"学习与工作历程","children":[{"id":"experience-work","label":"工作经历"},{"id":"experience-education","label":"教育背景"},{"id":"recognition","label":"个人荣誉"}]}};
+portfolioOutlineSections.work = {
+  label: '作品·视觉探索',
+  children: galleryData.map((category, categoryIndex) => ({
+    id: 'category-' + category.slug, label: category.title, categoryIndex
+  }))
+};
 let portfolioOutlineSectionId = '', portfolioMenuPreview = null;
 
 const portfolioSearchForm = document.querySelector('.portfolio-search');
@@ -975,6 +999,7 @@ function alignPortfolioSubmenus() {
     const margin = left.toFixed(2) + 'px';
     if (inner.style.marginInlineStart !== margin) inner.style.marginInlineStart = margin;
   });
+  syncPortfolioWorkCategoryLinks(categoryIndex);
 }
 
 function syncPortfolioHeaderHeight() {
