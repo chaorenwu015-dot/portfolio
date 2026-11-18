@@ -547,13 +547,13 @@ html.layer-paging { scroll-padding-block-start: calc(var(--portfolio-header-heig
 /* Primary content sequence; work categories belong to the visual-exploration section. */
 :root { --portfolio-subnav-height: 0px; }
 .portfolio-primary-nav {
-  position: static; display: flex; justify-content: center; align-items: center;
+  position: static; display: flex; justify-content: flex-start; align-items: center;
   gap: 20px; min-width: 0; padding: 0; border: 0; background: none;
   backdrop-filter: none; z-index: auto; overflow-x: auto; scrollbar-width: none;
 }
 .portfolio-primary-nav a {
   display: inline-flex; align-items: center; min-height: 44px; padding: 8px 10px;
-  white-space: nowrap; color: #c4c4c4; font-size: 13px;
+  white-space: nowrap; color: #c4c4c4; font-size: 18px; font-weight: 500; line-height: 1.5;
 }
 .portfolio-primary-nav a[aria-current="location"] { color: #fff; box-shadow: inset 0 -2px 0 #fff; }
 .portfolio-header > .portfolio-category-nav {
@@ -573,8 +573,8 @@ html.layer-paging { scroll-padding-block-start: calc(var(--portfolio-header-heig
   .portfolio-primary-nav { grid-column: 1 / -1; grid-row: 2; }
 }
 @media (max-width: 700px) {
-  .portfolio-primary-nav { gap: 10px; justify-content: space-between; }
-  .portfolio-primary-nav a { padding-inline: 5px; font-size: 12px; }
+  .portfolio-primary-nav { gap: 6px; justify-content: flex-start; }
+  .portfolio-primary-nav a { padding-inline: 5px; font-size: 16px; }
   .portfolio-secondary-inner { gap: 10px; padding-inline: 18px; }
   .portfolio-secondary-label { font-size: 10px; }
 }
